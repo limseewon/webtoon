@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>에피소드 — 작가명</title>
+  <meta name="description" content="작가명 웹툰 뷰어" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <style>
+    /* 페이지 전용 보정 (전역 styles.css와 함께 사용) */
+    :root {
+      --brand: #66e0a3;
+      --muted: #a8acb3;
+    }
+
+    .container-narrow {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 20px
+    }
+
+    .viewer img {
+      width: 100%;
+      display: block;
+      margin: 0 auto 12px
+    }
+
+    .viewer .skeleton {
+      height: 600px;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 12px;
+      margin-bottom: 12px
+    }
+
+    .nav-episodes {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 16px 0
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--brand);
+      color: #062d1d;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700
+    }
+
+    .btn.disabled,
+    .btn[aria-disabled="true"] {
+      opacity: .5;
+      pointer-events: none
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .paywall {
+      background: #111;
+      border: 1px dashed #333;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 16px
+    }
+
+    .hidden {
+      display: none
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="/">작가명</a>
+      <nav>
+        <a href="/archive.html">아카이브</a>
+        <a href="/support.html">후원</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container-narrow">
+    <article id="episode">
+      <h1 id="ep-title">로딩 중…</h1>
+      <p class="meta"><span id="ep-date">—</span> · <span id="ep-status">—</span></p>
+
+      <div class="nav-episodes">
+        <a id="prev-link" class="btn" href="#" aria-disabled="true">← 이전 화</a>
+        <a id="next-link" class="btn" href="#" aria-disabled="true">다음 화 →</a>
+      </div>
+
+      <div id="images" class="viewer" aria-live="polite"></div>
+
+      <div id="paywall" class="paywall hidden">
+        <h3>후원자 전용 에피소드</h3>
+        <p class="muted">후원해 주시면 바로 열람할 수 있어요.</p>
+        <a class="btn" href="/support.html">후원하러 가기</a>
+      </div>
+
+      <p class="muted" style="margin-top:24px">끝까지 읽어주셔서 감사합니다 🙌</p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container"><small>© <span id="year"></span> 작가명</small></div>
+  </footer>
+
+  <script>
+    // ---- 유틸 ----
+    const qs = (s, el = document) => el.querySelector(s);
+    const getParam = n => new URL(location.href).searchParams.get(n);
+    const json = async url => { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw new Error('Fetch failed: ' + url); return r.json(); };
+
+    // ---- 초기화 ----
+    (async function init() {
+      try {
+        // 푸터 연도
+        qs('#year').textContent = new Date().getFullYear();
+
+        // 1) manifest 로드
+        const manifest = await json('/episodes/manifest.json');
+        const ids = manifest.episodes.map(e => e.id).sort(); // ep-0001, ep-0002 ...
+
+        // 2) URL 파라미터(id) 없으면 최신화로 이동 (date 기준)
+        let id = getParam('id');
+        if (!id) {
+          const latest = [...manifest.episodes].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+          location.replace(`/episode.html?id=${latest.id}`);
+          return;
+        }
+
+        // id 유효성 확인
+        if (!ids.includes(id)) {
+          console.warn('Unknown episode id:', id);
+          location.replace('/archive.html');
+          return;
+        }
+
+        // 3) 에피소드 데이터 로드
+        const data = await json(`/episodes/${id}/data.json`);
+
+        // 4) 메타 렌더
+        qs('#ep-title').textContent = data.title;
+        qs('#ep-date').textContent = new Date(data.date).toLocaleDateString('ko-KR');
+        qs('#ep-status').textContent = data.locked ? '후원자 전용' : '무료';
+
+        // 5) 앞/뒤 회차 링크 (ids는 오름차순: ep-0001 < ep-0002)
+        const index = ids.indexOf(id);
+        const prevId = ids[index - 1] || null;
+        const nextId = ids[index + 1] || null;
+        const prev = qs('#prev-link');
+        const next = qs('#next-link');
+        if (prevId) { prev.href = `/episode.html?id=${prevId}`; prev.removeAttribute('aria-disabled'); } else { prev.classList.add('disabled'); }
+        if (nextId) { next.href = `/episode.html?id=${nextId}`; next.removeAttribute('aria-disabled'); } else { next.classList.add('disabled'); }
+
+        // 6) 페이월 처리
+        if (data.locked) {
+          qs('#paywall').classList.remove('hidden');
+          return; // 이미지 렌더 생략
+        }
+
+        // 7) Lazy 이미지 렌더
+        const wrap = qs('#images');
+        const frag = document.createDocumentFragment();
+        data.images.forEach(src => {
+          const img = new Image();
+          img.src = src;
+          img.alt = data.title;
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          frag.appendChild(img);
+        });
+        wrap.appendChild(frag);
+
+        // 8) 스크롤 복원(선택)
+        if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
+      } catch (err) {
+        console.error(err);
+        alert('에피소드를 불러오는 중 문제가 발생했습니다. 파일 경로와 JSON 형식을 확인해주세요.');
+      }
+    })();
+  </script>
+</body>
+
+</html>

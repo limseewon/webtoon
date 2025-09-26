@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>작가명 — 웹툰 공식 사이트</title>
+  <meta name="description" content="작가명 공식 웹툰 사이트. 매주 토요일 업데이트!" />
+  <meta property="og:title" content="작가명 — 웹툰 공식 사이트" />
+  <meta property="og:description" content="매주 토요일 업데이트, 세로 스크롤 웹툰 뷰어" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/assets/img/og/og-cover.jpg" />
+  <link rel="icon" href="/favicon.ico" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+    :root {
+      --bg: #050507;
+      --bg-gradient: linear-gradient(180deg, #050507 0%, #0a0a0f 100%);
+      --card: rgba(17, 18, 25, 0.8);
+      --card-hover: rgba(25, 27, 35, 0.95);
+      --text: #ffffff;
+      --muted: #8b92a8;
+      --brand: #00ff88;
+      --brand-dark: #00cc6a;
+      --accent: #ff0080;
+      --border: rgba(255, 255, 255, 0.08);
+      --glow: 0 0 40px rgba(0, 255, 136, 0.3);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --space: clamp(16px, 2.5vw, 24px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 0, 128, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(120, 119, 198, 0.05) 0%, transparent 50%);
+      color: var(--text);
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      min-height: 100dvh;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="turbulence" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.02"/></svg>');
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--brand), var(--accent));
+      border-radius: 10px;
+    }
+
+    /* Header */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(5, 5, 7, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .site-header.scrolled {
+      background: rgba(5, 5, 7, 0.95);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      gap: 12px;
+    }
+
+    .logo {
+      font-size: clamp(20px, 2.4vw, 24px);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      transition: transform 0.2s ease;
+    }
+
+    @media (hover: hover) {
+      .logo:hover {
+        transform: scale(1.04);
+      }
+    }
+
+    nav {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      transition: color 0.2s ease;
+      position: relative;
+      padding: 8px 4px;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+      transition: width 0.2s ease;
+    }
+
+    @media (hover: hover) {
+      nav a:hover {
+        color: var(--text);
+      }
+
+      nav a:hover::after,
+      nav a.active::after {
+        width: 100%;
+      }
+    }
+
+    nav a.nav-cta::after {
+      display: none;
+    }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #000;
+      padding: 10px 16px;
+      border-radius: 24px;
+      font-weight: 900;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+    }
+
+    .nav-cta:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Right rail: Auth buttons */
+    .right-rail {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-auth {
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--text);
+      text-decoration: none;
+      transition: transform .1s ease, box-shadow .2s ease;
+      min-height: 40px;
+    }
+
+    .btn-auth:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .user-pill {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+
+    .logout {
+      cursor: pointer;
+      opacity: .85;
+      font-weight: 900;
+    }
+
+    .logout:active {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    /* Mobile Burger */
+    .burger {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .burger svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .mobile-sheet {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: rgba(12, 13, 18, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transform: translateY(-12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .2s ease, opacity .2s ease;
+      z-index: 90;
+    }
+
+    .mobile-sheet.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-sheet .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 12px var(--space) calc(12px + var(--safe-bottom));
+    }
+
+    .mobile-sheet a {
+      display: inline-block;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    /* Hero */
+    .hero {
+      margin-top: 72px;
+      padding: 72px 0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content h1 {
+      font-size: clamp(34px, 6vw, 64px);
+      font-weight: 900;
+      line-height: 1.12;
+      margin-bottom: 18px;
+      background: linear-gradient(180deg, #fff 0%, #8b92a8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-content .tagline {
+      font-size: clamp(16px, 2.4vw, 20px);
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border-radius: 30px;
+      font-weight: 900;
+      font-size: 16px;
+      text-decoration: none;
+      transition: transform 0.1s ease, box-shadow 0.2s ease, border-color .2s ease;
+      min-height: 44px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #000;
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:active {
+      border-color: var(--brand);
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .featured-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    @media (hover: hover) {
+      .featured-card:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: var(--glow), 0 30px 80px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    .featured-image {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .featured-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .badge-new {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, var(--accent), #ff0040);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 1px;
+      animation: pulse 2s infinite;
+    }
+
+    .featured-info {
+      padding: 20px;
+    }
+
+    .featured-info h3 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .featured-info p {
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 18px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Sections */
+    section {
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(28px, 4.5vw, 42px);
+      font-weight: 900;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-header p {
+      color: var(--muted);
+      font-size: clamp(15px, 2.4vw, 18px);
+    }
+
+    /* Episodes */
+    .episodes {
+      padding: 72px 0;
+    }
+
+    .episodes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .episode-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.15s ease, background 0.15s ease, border-color .15s ease;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (hover: hover) {
+      .episode-card:hover {
+        transform: translateY(-4px);
+        background: var(--card-hover);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border-color: var(--brand);
+      }
+    }
+
+    .episode-thumbnail {
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .episode-card:active .episode-thumbnail img {
+      transform: scale(1.02);
+    }
+
+    .episode-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.25s ease;
+    }
+
+    .episode-number {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.65);
+      color: var(--brand);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .episode-info {
+      padding: 16px;
+    }
+
+    .episode-info h3 {
+      font-size: 18px;
+      margin-bottom: 6px;
+      font-weight: 900;
+    }
+
+    .episode-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* CTA */
+    .cta-section {
+      padding: 80px 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .cta-content {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 0, 128, 0.1));
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 56px 24px;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-content::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--brand) 0%, transparent 70%);
+      opacity: 0.05;
+      animation: rotate 20s linear infinite;
+    }
+
+    .cta-content h2 {
+      font-size: clamp(28px, 6vw, 48px);
+      margin-bottom: 12px;
+      font-weight: 900;
+      position: relative;
+    }
+
+    .cta-content p {
+      font-size: clamp(15px, 2.4vw, 18px);
+      color: var(--muted);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+      margin-top: 80px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 32px;
+    }
+
+    .footer-brand h3 {
+      font-size: 28px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-brand p {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-link {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+
+    @media (hover: hover) {
+      .social-link:hover {
+        background: var(--brand);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
+      }
+    }
+
+    .footer-column h4 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      font-weight: 900;
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-column ul li a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+
+    @media (hover: hover) {
+      .footer-column ul li a:hover {
+        color: var(--brand);
+        transform: translateX(4px);
+        display: inline-block;
+      }
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Floating */
+    .float {
+      position: fixed;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .float-1 {
+      background: var(--brand);
+      top: 10%;
+      left: 10%;
+      animation: float1 20s infinite;
+    }
+
+    .float-2 {
+      background: var(--accent);
+      top: 70%;
+      right: 10%;
+      animation: float2 25s infinite;
+    }
+
+    @keyframes float1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(50px, -50px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-50px, 50px) scale(0.9);
+      }
+    }
+
+    @keyframes float2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(-50px, 50px) scale(1.2);
+      }
+
+      66% {
+        transform: translate(50px, -50px) scale(0.8);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Appear animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Modal (Auth) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 12px;
+    }
+
+    .modal {
+      width: min(420px, 92%);
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+      transform: translateY(10px);
+      opacity: 0;
+      transition: opacity .25s, transform .25s;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-backdrop.active .modal {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal h3 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    .modal .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .modal input[type="email"],
+    .modal input[type="password"],
+    .modal input[type="text"] {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .modal .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .btn-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      min-height: 44px;
+    }
+
+    .btn-inline.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #000;
+      border: none;
+    }
+
+    .btn-inline.ghost {
+      background: transparent;
+    }
+
+    .modal .error {
+      color: #ff6b6b;
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    /* Responsive breakpoints */
+    @media (max-width: 992px) {
+      .hero {
+        padding: 56px 0;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      nav a:not(.nav-cta) {
+        display: none;
+      }
+
+      .burger {
+        display: inline-flex;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .episodes-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .section-header {
+        margin-bottom: 24px;
+      }
+
+      .cta-content {
+        padding: 44px 18px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .site-footer {
+        margin-bottom: var(--safe-bottom);
+      }
+
+      /* Subtle performance win on low screens */
+      .float-1,
+      .float-2 {
+        opacity: 0.035;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .episodes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        padding: 10px 0;
+      }
+
+      .hero {
+        margin-top: 64px;
+        padding: 44px 0;
+      }
+
+      .featured-info h3 {
+        font-size: 20px;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .mobile-sheet .row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Reduce motion when user prefers */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Floating Background Elements -->
+  <div class="float float-1" aria-hidden="true"></div>
+  <div class="float float-2" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo">WEBTOON</a>
+        <nav aria-label="주요 메뉴">
+          <a href="#episodes">에피소드</a>
+          <a href="#support" class="nav-cta">후원하기</a>
+        </nav>
+        <div class="right-rail">
+          <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-sheet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M3 12h18M3 18h18" />
+            </svg>
+          </button>
+          <a href="#login" id="btn-login" class="btn-auth">로그인</a>
+          <a href="#signup" id="btn-signup" class="btn-auth">회원가입</a>
+          <div id="user-pill" class="user-pill">
+            <span id="user-name">USER</span>
+            <span class="logout" id="btn-logout">로그아웃</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-sheet" id="mobile-sheet" aria-hidden="true">
+      <div class="row container">
+        <a href="#episodes" data-close-sheet>에피소드</a>
+        <a href="#support" data-close-sheet>후원하기</a>
+        <a href="#login" data-open="login-modal">로그인</a>
+        <a href="#signup" data-open="signup-modal">회원가입</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content reveal">
+        <h1>당신이 흥분될<br>최고의 웹툰</h1>
+        <p class="tagline">매주 토요일, 새로운 에피소드가 업데이트됩니다</p>
+        <div class="hero-buttons">
+          <a href="#latest" class="btn-primary">
+            <span>최신화 보기</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a href="#episodes" class="btn-secondary"><span>전체 에피소드</span></a>
+        </div>
+      </div>
+      <div class="hero-visual reveal" id="latest">
+        <div class="featured-card">
+          <div class="featured-image">
+            <span class="badge-new">NEW</span>
+            <!-- /assets/img/featured-ep.jpg -->
+          </div>
+          <div class="featured-info">
+            <h3>Episode 01: 새로운 시작</h3>
+            <p>운명을 바꿀 마지막 기회, 그 선택의 순간</p>
+            <div class="stats">
+              <div class="stat">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span>125.3K</span>
+              </div>
+              <div class="stat">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                <span>89.2K</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Episodes -->
+  <section class="episodes" id="episodes">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>전체 에피소드</h2>
+        <p>처음부터 최신화까지, 모든 이야기를 만나보세요</p>
+      </div>
+      <div class="episodes-grid">
+        <article class="episode-card reveal" data-ep="01">
+          <div class="episode-thumbnail"><span class="episode-number">EP 01</span></div>
+          <div class="episode-info">
+            <h3>새로운 시작</h3>
+            <div class="episode-meta"><span>2024.12.14</span><span>⭐ 9.8</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Support -->
+  <section id="support" class="support">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>후원하기</h2>
+        <p>작가와 작품을 응원해주세요</p>
+      </div>
+      <div class="support-options reveal" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="#" class="btn-primary">✨ 구독하기</a>
+        <a href="#" class="btn-secondary">☕ 커피 사주기</a>
+        <a href="#subscribe" class="btn-secondary">🔔 구독 알림</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content reveal">
+        <h2>지금 바로 시작하세요</h2>
+        <p>매주 토요일, 새로운 에피소드를 가장 먼저 만나보세요</p>
+        <a href="#subscribe" class="btn-primary">
+          <span>구독하기</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h3>WEBTOON</h3>
+          <p>매주 새로운 이야기로 여러분을 찾아갑니다</p>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Twitter">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+              </svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="var(--bg)" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="var(--bg)" stroke-width="2" />
+              </svg>
+            </a>
+            <a href="#" class="social-link" aria-label="YouTube">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.02V8.98L15.5 12l-5.75 3.02z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h4>바로가기</h4>
+          <ul>
+            <li><a href="#episodes">전체 에피소드</a></li>
+            <li><a href="#support">후원하기</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>정책</h4>
+          <ul>
+            <li><a href="/privacy.html">개인정보처리방침</a></li>
+            <li><a href="/terms.html">이용약관</a></li>
+            <li><a href="/support.html">고객센터</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>뉴스레터</h4>
+          <form id="newsletter-form">
+            <input type="email" name="email" placeholder="이메일 주소" required
+              style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);margin-bottom:8px;">
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">구독하기</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> WEBTOON. All rights reserved.</span>
+        <span>매주 토요일 업데이트</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Auth Modals ===== -->
+  <!-- Login Modal -->
+  <div class="modal-backdrop" id="login-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <h3 id="login-title">로그인</h3>
+      <p>이메일과 비밀번호를 입력해주세요.</p>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="login-email">이메일</label>
+          <input id="login-email" type="email" name="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="login-password">비밀번호</label>
+          <input id="login-password" type="password" name="password" placeholder="********" required minlength="6" />
+        </div>
+        <div class="error" id="login-error"></div>
+        <div class="actions">
+          <button type="submit" class="btn-inline primary" style="flex:1;">로그인</button>
+          <button type="button" class="btn-inline ghost" data-close="login-modal">취소</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="modal-backdrop" id="signup-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="signup-title">
+      <h3 id="signup-title">회원가입</h3>
+      <p>간단한 정보만 입력하면 바로 시작할 수 있어요.</p>
+      <form id="signup-form" novalidate>
+        <div class="field">
+          <label for="signup-name">닉네임</label>
+          <input id="signup-name" type="text" name="name" placeholder="닉네임" required minlength="2" />
+        </div>
+        <div class="field">
+          <label for="signup-email">이메일</label>
+          <input id="signup-email" type="email" name="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="signup-password">비밀번호 (6자 이상)</label>
+          <input id="signup-password" type="password" name="password" placeholder="********" required minlength="6" />
+        </div>
+        <div class="error" id="signup-error"></div>
+        <div class="actions">
+          <button type="submit" class="btn-inline primary" style="flex:1;">가입하기</button>
+          <button type="button" class="btn-inline ghost" data-close="signup-modal">취소</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ===== 헤더 스크롤 효과 =====
+    const header = document.getElementById('header');
+    const onScrollHeader = () => {
+      if (window.scrollY > 10) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScrollHeader, { passive: true });
+    onScrollHeader();
+
+    // ===== 내비 활성 상태 =====
+    const navLinks = [...document.querySelectorAll('header nav a')].filter(a => !a.classList.contains('nav-cta'));
+    const sections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const setActiveNav = () => {
+      const pos = window.scrollY + 120;
+      let activeIndex = -1;
+      sections.forEach((sec, i) => { if (sec.offsetTop <= pos) activeIndex = i; });
+      navLinks.forEach((a, i) => a.classList.toggle('active', i === activeIndex));
+    };
+    window.addEventListener('scroll', setActiveNav, { passive: true });
+    window.addEventListener('load', setActiveNav);
+
+    // ===== IntersectionObserver =====
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // ===== 에피소드 클릭 이동 =====
+    document.querySelectorAll('.episode-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const ep = card.getAttribute('data-ep');
+        window.location.href = `/episode.html?ep=${encodeURIComponent(ep)}`;
+      });
+    });
+
+    // ===== 뉴스레터(데모) =====
+    document.getElementById('newsletter-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = e.target.email.value.trim();
+      if (!email) return;
+      alert(`구독 신청 완료: ${email}`);
+      e.target.reset();
+    });
+
+    // ===== 연도 표시 =====
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ===== Auth: 데모용 로컬 상태 =====
+    const AUTH_KEY = 'webtoon_auth';
+    const btnLogin = document.getElementById('btn-login');
+    const btnSignup = document.getElementById('btn-signup');
+    const userPill = document.getElementById('user-pill');
+    const userNameSpan = document.getElementById('user-name');
+    const btnLogout = document.getElementById('btn-logout');
+
+    const loginModal = document.getElementById('login-modal');
+    const signupModal = document.getElementById('signup-modal');
+
+    const openModal = (el) => { el.classList.add('active'); el.setAttribute('aria-hidden', 'false'); };
+    const closeModal = (el) => { el.classList.remove('active'); el.setAttribute('aria-hidden', 'true'); };
+
+    // 모달 외부 클릭 닫기
+    [loginModal, signupModal].forEach(m => m.addEventListener('click', (e) => { if (e.target === m) closeModal(m); }));
+    // 취소 버튼
+    document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-close');
+      const el = document.getElementById(id);
+      if (el) closeModal(el);
+    }));
+
+    // 로그인 / 회원가입 버튼
+    btnLogin.addEventListener('click', (e) => { e.preventDefault(); openModal(loginModal); closeSheet(); });
+    btnSignup.addEventListener('click', (e) => { e.preventDefault(); openModal(signupModal); closeSheet(); });
+
+    // 상태 반영
+    const applyAuth = () => {
+      const raw = localStorage.getItem(AUTH_KEY);
+      if (!raw) {
+        btnLogin.style.display = '';
+        btnSignup.style.display = '';
+        userPill.style.display = 'none';
+        return;
+      }
+      const sess = JSON.parse(raw);
+      userNameSpan.textContent = sess.name || 'USER';
+      btnLogin.style.display = 'none';
+      btnSignup.style.display = 'none';
+      userPill.style.display = 'inline-flex';
+    };
+
+    // 로그아웃
+    btnLogout.addEventListener('click', () => {
+      localStorage.removeItem(AUTH_KEY);
+      applyAuth();
+    });
+
+    // 로그인 제출
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = e.target.email.value.trim();
+      const pw = e.target.password.value;
+      const err = document.getElementById('login-error');
+      err.textContent = '';
+
+      if (!email || !pw) { err.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
+      if (pw.length < 6) { err.textContent = '비밀번호는 6자 이상이어야 합니다.'; return; }
+
+      const name = email.split('@')[0];
+      localStorage.setItem(AUTH_KEY, JSON.stringify({ email, name }));
+      applyAuth();
+      closeModal(loginModal);
+    });
+
+    // 회원가입 제출
+    document.getElementById('signup-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = e.target.name.value.trim();
+      const email = e.target.email.value.trim();
+      const pw = e.target.password.value;
+      const err = document.getElementById('signup-error');
+      err.textContent = '';
+
+      if (!name || !email || !pw) { err.textContent = '모든 항목을 입력해주세요.'; return; }
+      if (name.length < 2) { err.textContent = '닉네임은 2자 이상이어야 합니다.'; return; }
+      if (pw.length < 6) { err.textContent = '비밀번호는 6자 이상이어야 합니다.'; return; }
+
+      localStorage.setItem(AUTH_KEY, JSON.stringify({ email, name }));
+      applyAuth();
+      closeModal(signupModal);
+    });
+
+    // ===== 모바일 시트 (버거 메뉴) =====
+    const burger = document.getElementById('burger');
+    const sheet = document.getElementById('mobile-sheet');
+
+    function openSheet() {
+      sheet.classList.add('open');
+      sheet.setAttribute('aria-hidden', 'false');
+      burger.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeSheet() {
+      sheet.classList.remove('open');
+      sheet.setAttribute('aria-hidden', 'true');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+
+    burger.addEventListener('click', () => {
+      sheet.classList.contains('open') ? closeSheet() : openSheet();
+    });
+
+    sheet.addEventListener('click', (e) => {
+      if (e.target.matches('[data-close-sheet]')) closeSheet();
+      const openId = e.target.getAttribute('data-open');
+      if (openId) {
+        const el = document.getElementById(openId);
+        if (el) openModal(el);
+      }
+    });
+
+    // ESC로 닫기
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSheet();
+    });
+
+    // 초기 적용
+    applyAuth();
+  </script>
+</body>
+
+</html>

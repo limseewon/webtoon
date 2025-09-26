@@ -1,0 +1,18 @@
+{
+  "episodes": [
+    {
+      "id": "ep-0002",
+      "title": "2화 — 낯선 방문자",
+      "date": "2025-09-20",
+      "thumb": "/assets/img/thumbs/ep-0002.jpg",
+      "locked": false
+    },
+    {
+      "id": "ep-0001",
+      "title": "1화 — 시작",
+      "date": "2025-09-13",
+      "thumb": "/assets/img/thumbs/ep-0001.jpg",
+      "locked": false
+    }
+  ]
+}
