@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>전체 에피소드 — 작가명</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container"><a class="logo" href="/">WEBTOON</a>
+      <nav><a href="/support.html" class="btn btn-primary">후원하기</a></nav>
+    </div>
+  </header>
+  <main class="container">
+    <div class="section-header">
+      <h2>전체 에피소드</h2>
+      <p>처음부터 최신화까지</p>
+    </div>
+    <div id="grid" class="episodes-grid"></div>
+  </main>
+  <footer class="site-footer">
+    <div class="container">© <span id="year"></span> WEBTOON</div>
+  </footer>
+  <script type="module">
+    import { $, escapeHTML } from '/assets/js/app.js';
+    $('#year').textContent = new Date().getFullYear();
+    const manifest = await fetch('/episodes/manifest.json', { cache: 'no-store' }).then(r => r.json());
+    const list = [...manifest.episodes].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const grid = $('#grid'); const frag = document.createDocumentFragment();
+    for (const ep of list) {
+      const a = document.createElement('a'); a.className = 'episode-card'; a.href = `/episode.html?id=${ep.id}`;
+      a.innerHTML = `<div class="episode-thumb" style="background:url('/assets/img/thumbs/${ep.id}.jpg') center/cover no-repeat"></div>
+<div class="episode-info"><h3>${escapeHTML(ep.title)}</h3><div class="episode-meta"><span>${new Date(ep.date).toLocaleDateString('ko-KR')}</span><span>${ep.locked ? '🔒' : '무료'}</span></div></div>`;
+      frag.appendChild(a);
+    }
+    grid.appendChild(frag);
+  </script>
+</body>
+
+</html>
